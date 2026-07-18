@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>UPI Fraud Detection System</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', sans-serif;
+      background: #f3f4f6;
+      color: #111827;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 50px auto;
+      background: #ffffff;
+      padding: 30px;
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    }
+
+    h2 {
+      text-align: center;
+      font-weight: 600;
+      margin-bottom: 20px;
+    }
+
+    label {
+      font-weight: 500;
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      margin-bottom: 16px;
+      font-size: 14px;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      background: #2563eb;
+      color: #ffffff;
+      font-size: 16px;
+      font-weight: 600;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    button:hover {
+      background: #1d4ed8;
+    }
+
+    .result-box {
+      margin-top: 25px;
+      padding: 20px;
+      background: #f9fafb;
+      border-radius: 12px;
+      border-left: 5px solid #3b82f6;
+      display: none;
+    }
+
+    .fraud {
+      border-left-color: #dc2626 !important;
+      background: #fef2f2 !important;
+    }
+
+    .safe {
+      border-left-color: #16a34a !important;
+      background: #f0fdf4 !important;
+    }
+
+    .footer {
+      margin-top: 40px;
+      text-align: center;
+      color: #6b7280;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h2>UPI Fraud Detection System</h2>
+
+    <label>Transaction Type</label>
+    <select id="type">
+      <option value="PAYMENT">PAYMENT</option>
+      <option value="TRANSFER">TRANSFER</option>
+    </select>
+
+    <label>Amount</label>
+    <input type="number" id="amount" placeholder="Enter transaction amount" />
+
+    <label>Sender Old Balance</label>
+    <input type="number" id="oldbalanceOrg" placeholder="Old balance (origin)" />
+
+    <label>Sender New Balance</label>
+    <input type="number" id="newbalanceOrig" placeholder="New balance (origin)" />
+
+    <label>Receiver Old Balance</label>
+    <input type="number" id="oldbalanceDest" placeholder="Old balance (destination)" />
+
+    <label>Receiver New Balance</label>
+    <input type="number" id="newbalanceDest" placeholder="New balance (destination)" />
+
+    
+
+    <button onclick="predictFraud()">Check Fraud</button>
+
+    <div id="result" class="result-box"></div>
+  </div>
+
+  <div class="footer">© 2025 Fraud Detection Engine</div>
+
+  <script>
+    async function predictFraud() {
+      const payload = {
+        type: document.getElementById("type").value,
+        amount: document.getElementById("amount").value,
+        oldbalanceOrg: document.getElementById("oldbalanceOrg").value,
+        newbalanceOrig: document.getElementById("newbalanceOrig").value,
+        oldbalanceDest: document.getElementById("oldbalanceDest").value,
+        newbalanceDest: document.getElementById("newbalanceDest").value,
+        
+      };
+
+      const resultBox = document.getElementById("result");
+      resultBox.style.display = "none";
+
+      try {
+        const res = await fetch("http://localhost:5000/predict", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await res.json();
+
+        if (data.error) {
+          resultBox.className = "result-box";
+          resultBox.style.display = "block";
+          resultBox.innerHTML = `<strong>Error:</strong> ${data.error}`;
+          return;
+        }
+
+        const status = data.is_fraud === 1 ? "⚠️ FRAUD DETECTED" : "🟢 SAFE TRANSACTION";
+        const prob = (data.probability * 100).toFixed(2);
+
+        resultBox.style.display = "block";
+        resultBox.className = data.is_fraud === 1 ? "result-box fraud" : "result-box safe";
+
+        resultBox.innerHTML = `
+          <div style="font-size: 18px; font-weight: 600; margin-bottom: 8px;">${status}</div>
+          <div><strong>Fraud Probability:</strong> ${prob}%</div>
+        `;
+
+      } catch (err) {
+        resultBox.style.display = "block";
+        resultBox.className = "result-box";
+        resultBox.innerHTML = `<strong>Error:</strong> ${err.message}`;
+      }
+    }
+  </script>
+</body>
+</html>

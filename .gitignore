@@ -1,0 +1,28 @@
+# Python
+__pycache__/
+*.pyc
+
+# Virtual environments
+venv/
+env/
+.venv/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Dataset
+dataset/
+datasets/
+train/
+test/
+validation/
+
+# Uploaded files
+uploads/
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db

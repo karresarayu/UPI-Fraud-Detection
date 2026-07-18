@@ -26,6 +26,10 @@ A Machine Learning-based web application that predicts whether a UPI transaction
 4. The system predicts whether the transaction is **Fraudulent** or **Legitimate**.
 5. The result is displayed on the webpage.
 
+   <img width="742" height="827" alt="Screenshot 2026-07-18 162824" src="https://github.com/user-attachments/assets/f88740f3-d29f-4209-942b-c59e6a1cd947" />
+
+
+
 ## 📁 Project Structure
 ```
 UPI-Fraud-Detection/
